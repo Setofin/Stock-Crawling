@@ -17,8 +17,15 @@ async def load_tvsi(ticker):
     await asyncio.sleep(5)
 
 
-def get_bs(ticker):
-    fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdkt"]/tbody//tr')
+def get_bs(ticker, type = ''):
+    if type == 'Bank':
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktbank"]/tbody/tr')
+    elif type == 'Securities':
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktck"]/tbody/tr')
+    elif type == 'Insurance':
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktbh"]/tbody/tr')
+    else:
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdkt"]/tbody/tr')
 
     heading = fin_tr[0].find_elements_by_tag_name('td')
 
@@ -47,10 +54,17 @@ async def load_is():
     driver.find_element_by_xpath('//*[@id="analyze"]/div[4]/ul/li[2]').click()
     await asyncio.sleep(5)
 
-def get_is(ticker):
+def get_is(ticker, type = ''):
     asyncio.run(load_is())
 
-    fin_tr = driver.find_elements_by_xpath('//*[@id="table_bckqkd"]/tbody//tr')
+    if type == 'Bank':
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktbank"]/tbody/tr')
+    elif type == 'Securities':
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktck"]/tbody/tr')
+    elif type == 'Insurance':
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktbh"]/tbody/tr')
+    else:
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdkt"]/tbody/tr')
 
     heading = fin_tr[0].find_elements_by_tag_name('td')
 
@@ -79,9 +93,16 @@ async def load_cf():
     driver.find_element_by_xpath('//*[@id="analyze"]/div[4]/ul/li[4]').click()
     await asyncio.sleep(5)
 
-def get_cf(ticker):
+def get_cf(ticker, type = ''):
     asyncio.run(load_cf())
-    fin_tr = driver.find_elements_by_xpath('//*[@id="table_lctttgiantiep"]/tbody//tr')
+    if type == 'Bank':
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktbank"]/tbody/tr')
+    elif type == 'Securities':
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktck"]/tbody/tr')
+    elif type == 'Insurance':
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktbh"]/tbody/tr')
+    else:
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdkt"]/tbody/tr')
 
     heading = fin_tr[0].find_elements_by_tag_name('td')
 
@@ -106,8 +127,16 @@ def get_cf(ticker):
     data.to_csv("{}_Cashflow.csv".format(ticker))
     driver.close()
 
+crawling_ticker = 'VCB'
 
-asyncio.run(load_tvsi('HPG'))
-get_bs('HPG')
-get_is('HPG')
-get_cf('HPG')
+crawling_test = {
+    'SSI': 'Securities',
+    'VCB': 'Bank',
+    'VIC': 'Company'
+}
+
+for key, value in crawling_test.items():
+    asyncio.run(load_tvsi(key))
+    get_bs(key, value)
+    get_is(key, value)
+    get_cf(key, value)
