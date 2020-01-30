@@ -17,7 +17,7 @@ async def load_tvsi(ticker):
     await asyncio.sleep(5)
 
 
-def get_bs():
+def get_bs(ticker):
     fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdkt"]/tbody//tr')
 
     heading = fin_tr[0].find_elements_by_tag_name('td')
@@ -40,14 +40,14 @@ def get_bs():
     data.replace('', np.nan, inplace = True)
     data.dropna(how='all', axis=0, inplace = True)
     data.dropna(how = 'all', axis = 1, inplace = True)
-    data.to_csv('BalanceSheet.csv')
+    data.to_csv("{}_BalanceSheet.csv".format(ticker))
     driver.close()
 
 async def load_is():
     driver.find_element_by_xpath('//*[@id="analyze"]/div[4]/ul/li[2]').click()
     await asyncio.sleep(5)
 
-def get_is():
+def get_is(ticker):
     asyncio.run(load_is())
 
     fin_tr = driver.find_elements_by_xpath('//*[@id="table_bckqkd"]/tbody//tr')
@@ -72,14 +72,14 @@ def get_is():
     data.replace('', np.nan, inplace = True)
     data.dropna(how='all', axis=0, inplace = True)
     data.dropna(how = 'all', axis = 1, inplace = True)
-    data.to_csv('IncomeStatement.csv')
+    data.to_csv("{}_IncomeStatement.csv".format(ticker))
     driver.close()
 
 async def load_cf():
     driver.find_element_by_xpath('//*[@id="analyze"]/div[4]/ul/li[3]').click()
     await asyncio.sleep(5)
 
-def get_cf():
+def get_cf(ticker):
     asyncio.run(load_cf())
     fin_tr = driver.find_elements_by_xpath('//*[@id="table_lctttructiep"]/tbody//tr')
 
@@ -103,11 +103,11 @@ def get_cf():
     data.replace('', np.nan, inplace=True)
     data.dropna(how='all', axis=0, inplace=True)
     data.dropna(how='all', axis=1, inplace=True)
-    data.to_csv('Cashflow.csv')
+    data.to_csv("{}_Cashflow.csv".format(ticker))
     driver.close()
 
 
 asyncio.run(load_tvsi('HPG'))
-get_bs()
-get_is()
-get_cf()
+get_bs('HPG')
+#get_is('HPG')
+#get_cf('HPG')
