@@ -11,6 +11,7 @@ import time
 driver = webdriver.Chrome('C:\ChromeDriver\chromedriver')
 
 async def load_tvsi(ticker):
+    await asyncio.sleep(1)
     stock_url = 'https://finance.tvsi.com.vn/Enterprises/FinancialStatements?symbol={}'.format(ticker)
     driver.get(stock_url)
     driver.find_element_by_id('a_change_en').click()
@@ -58,13 +59,13 @@ def get_is(ticker, type = ''):
     asyncio.run(load_is())
 
     if type == 'Bank':
-        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktbank"]/tbody/tr')
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bckqkdbank"]/tbody/tr')
     elif type == 'Securities':
-        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktck"]/tbody/tr')
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bckqkdck"]/tbody/tr')
     elif type == 'Insurance':
-        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktbh"]/tbody/tr')
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bckqkdbh"]/tbody/tr')
     else:
-        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdkt"]/tbody/tr')
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bckqkd"]/tbody/tr')
 
     heading = fin_tr[0].find_elements_by_tag_name('td')
 
@@ -89,20 +90,24 @@ def get_is(ticker, type = ''):
     data.to_csv("{}_IncomeStatement.csv".format(ticker))
     #driver.close()
 
-async def load_cf():
-    driver.find_element_by_xpath('//*[@id="analyze"]/div[4]/ul/li[4]').click()
+async def load_cf(type):
+    if type == 'Bank':
+        driver.find_element_by_xpath('//*[@id="analyze"]/div[4]/ul/li[3]').click()
+    else:
+        driver.find_element_by_xpath('//*[@id="analyze"]/div[4]/ul/li[4]').click()
+
     await asyncio.sleep(5)
 
 def get_cf(ticker, type = ''):
-    asyncio.run(load_cf())
+    asyncio.run(load_cf(type = type))
     if type == 'Bank':
-        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktbank"]/tbody/tr')
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_lctttructiepbank"]/tbody/tr')
     elif type == 'Securities':
-        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktck"]/tbody/tr')
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_lctttgiantiepck"]/tbody/tr')
     elif type == 'Insurance':
-        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdktbh"]/tbody/tr')
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_lctttructiepbh"]/tbody/tr')
     else:
-        fin_tr = driver.find_elements_by_xpath('//*[@id="table_bcdkt"]/tbody/tr')
+        fin_tr = driver.find_elements_by_xpath('//*[@id="table_lctttgiantiep"]/tbody/tr')
 
     heading = fin_tr[0].find_elements_by_tag_name('td')
 
@@ -125,7 +130,7 @@ def get_cf(ticker, type = ''):
     data.dropna(how='all', axis=0, inplace=True)
     data.dropna(how='all', axis=1, inplace=True)
     data.to_csv("{}_Cashflow.csv".format(ticker))
-    driver.close()
+    #driver.close()
 
 crawling_ticker = 'VCB'
 
@@ -140,3 +145,4 @@ for key, value in crawling_test.items():
     get_bs(key, value)
     get_is(key, value)
     get_cf(key, value)
+
