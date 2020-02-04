@@ -130,19 +130,25 @@ def get_cf(ticker, type = ''):
     data.dropna(how='all', axis=0, inplace=True)
     data.dropna(how='all', axis=1, inplace=True)
     data.to_csv("{}_Cashflow.csv".format(ticker))
-    #driver.close()
+    driver.close()
 
-crawling_ticker = 'VCB'
+#For sharesoutstanding crawling:
+async def load_sharesout(ticker):
+    await asyncio.sleep(1)
+    stock_url = 'http://ra.vcsc.com.vn/?lang=en-US&ticker={}'.format(ticker)
+    driver.get(stock_url)
+    await asyncio.sleep(4)
 
-crawling_test = {
-    'SSI': 'Securities',
-    'VCB': 'Bank',
-    'VIC': 'Company'
-}
+def get_sharesout():
+    find_shares = driver.find_elements_by_xpath('//*[@id="FinancialOverview"]/div[3]/div/p[7]')
+    sharesout = find_shares[0].find_elements_by_tag_name('label')
+    return sharesout[0].text
 
-for key, value in crawling_test.items():
-    asyncio.run(load_tvsi(key))
-    get_bs(key, value)
-    get_is(key, value)
-    get_cf(key, value)
+crawling_sharesout = ['VCB', 'FPT', 'VIC', 'AAA', 'SSI']
+sharesout_array = []
 
+for ticker in crawling_sharesout:
+    asyncio.run(load_sharesout(ticker))
+    sharesout_array.append(get_sharesout())
+
+print(sharesout_array)
